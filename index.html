@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haas AI Solutions | Customer Portal</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">H</div>
+      <div class="brand-text">
+        <strong>Haas AI</strong>
+        <span>Solutions</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="#" class="nav-link active" data-view="dashboard">
+        <span class="nav-icon">&#9632;</span> Dashboard
+      </a>
+      <a href="#" class="nav-link" data-view="apps">
+        <span class="nav-icon">&#9638;</span> My Apps
+      </a>
+      <a href="#" class="nav-link" data-view="usage">
+        <span class="nav-icon">&#9202;</span> Usage
+      </a>
+      <a href="#" class="nav-link" data-view="billing">
+        <span class="nav-icon">&#36;</span> Billing Estimate
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="tenant-card">
+        <div class="tenant-avatar" id="tenantAvatar">A</div>
+        <div>
+          <div class="tenant-name" id="tenantName">Acme Corp</div>
+          <div class="tenant-plan" id="tenantPlan">Growth Plan</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">&#9776;</button>
+      <div class="topbar-title">
+        <h1 id="viewTitle">Dashboard</h1>
+        <p id="viewSubtitle">Overview of your applications, usage and spend</p>
+      </div>
+      <div class="topbar-actions">
+        <select id="rangeSelect" class="range-select">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+        <div class="user-chip">
+          <div class="user-avatar">RV</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content" id="content">
+
+      <!-- ===== DASHBOARD VIEW ===== -->
+      <section class="view" id="view-dashboard">
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <span class="stat-label">Active Apps</span>
+            <span class="stat-value" id="statApps">0</span>
+            <span class="stat-trend up">+0 this period</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Total Usage Time</span>
+            <span class="stat-value" id="statHours">0h</span>
+            <span class="stat-trend" id="statHoursTrend">--</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Estimated Spend</span>
+            <span class="stat-value" id="statCost">$0.00</span>
+            <span class="stat-trend" id="statCostTrend">--</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Most Used App</span>
+            <span class="stat-value stat-value-sm" id="statTopApp">--</span>
+            <span class="stat-trend">by usage time</span>
+          </div>
+        </div>
+
+        <div class="panel-grid">
+          <div class="panel panel-wide">
+            <div class="panel-header">
+              <h2>Usage Over Time</h2>
+              <span class="panel-subtext">Hours per day, all apps combined</span>
+            </div>
+            <canvas id="usageChart" height="220"></canvas>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Spend by App</h2>
+              <span class="panel-subtext">Share of estimated cost</span>
+            </div>
+            <canvas id="spendChart" height="220"></canvas>
+            <ul class="legend" id="spendLegend"></ul>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>App Snapshot</h2>
+            <span class="panel-subtext">Quick view of all applications</span>
+          </div>
+          <div class="app-grid" id="appGrid"></div>
+        </div>
+
+      </section>
+
+      <!-- ===== APPS VIEW ===== -->
+      <section class="view hidden" id="view-apps">
+        <div class="panel">
+          <div class="panel-header row">
+            <div>
+              <h2>My Applications</h2>
+              <span class="panel-subtext">All apps provisioned for your tenant</span>
+            </div>
+            <input type="text" id="appSearch" class="search-input" placeholder="Search apps...">
+          </div>
+          <div class="app-grid" id="appGridFull"></div>
+        </div>
+      </section>
+
+      <!-- ===== USAGE VIEW ===== -->
+      <section class="view hidden" id="view-usage">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Usage Detail</h2>
+            <span class="panel-subtext">Time spent per app in the selected period</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="usageTable">
+              <thead>
+                <tr>
+                  <th>App</th>
+                  <th>Sessions</th>
+                  <th>Active Users</th>
+                  <th>Total Hours</th>
+                  <th>Avg Session</th>
+                  <th>Last Used</th>
+                </tr>
+              </thead>
+              <tbody id="usageTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== BILLING VIEW ===== -->
+      <section class="view hidden" id="view-billing">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <span class="stat-label">Estimated This Period</span>
+            <span class="stat-value" id="billTotal">$0.00</span>
+            <span class="stat-trend" id="billTrend">--</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Projected Month End</span>
+            <span class="stat-value" id="billProjected">$0.00</span>
+            <span class="stat-trend">based on daily average</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Billing Plan</span>
+            <span class="stat-value stat-value-sm" id="billPlan">Growth Plan</span>
+            <span class="stat-trend">pay-as-you-go rates</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Cost Breakdown by App</h2>
+            <span class="panel-subtext">Rate is an estimate based on usage time and per-hour pricing. Actual invoice may vary.</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="billingTable">
+              <thead>
+                <tr>
+                  <th>App</th>
+                  <th>Hours Used</th>
+                  <th>Rate / Hour</th>
+                  <th>Estimated Cost</th>
+                  <th>Share</th>
+                </tr>
+              </thead>
+              <tbody id="billingTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <p class="disclaimer">
+          * Figures shown are rough estimates generated from recorded usage time and standard per-hour rates.
+          They do not represent a final invoice. Contact your account manager for exact billing details.
+        </p>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
